@@ -2,6 +2,11 @@ MIT License
 
 Copyright (c) 2026 deficlow
 
+This license covers the public documentation, manifest, and example
+client in this repository. The Zipp MCP server implementation hosted
+at https://zippfeed.com/mcp/ is proprietary and is NOT distributed
+under this license.
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

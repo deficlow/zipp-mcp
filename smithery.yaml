@@ -1,0 +1,52 @@
+name: zipp
+displayName: Zipp
+description: Multi-language crypto news aggregator with editorial sentiment + importance scoring across 8 languages. Every story cites the original publisher.
+version: 1.0.0
+homepage: https://zippfeed.com
+icon: https://zippfeed.com/static/assets/zipp-news-logo.png
+license: MIT
+repository: https://github.com/deficlow/zipp-mcp
+
+server:
+  type: streamable-http
+  url: https://zippfeed.com/mcp/
+  authentication:
+    type: none
+
+tools:
+  - name: search
+    description: Full-text search over Zipp's crypto news corpus, recency-first.
+  - name: get_latest
+    description: Stories from the last 24 hours, optionally filtered by language and category.
+  - name: get_breaking
+    description: Stories with importance score >= 75 from the last 24 hours.
+  - name: get_featured
+    description: Editor-curated highlights.
+  - name: get_post
+    description: Full post body, hashtags, and all categories for a given slug or id.
+  - name: list_categories
+    description: The 7-bucket x 5-leaf category taxonomy (35 leaves total).
+
+languages:
+  - en-US
+  - tr-TR
+  - es-ES
+  - ru-RU
+  - pt-PT
+  - fr-FR
+  - de-DE
+  - it-IT
+
+tags:
+  - news
+  - crypto
+  - blockchain
+  - finance
+  - multilingual
+  - aggregator
+  - sentiment
+
+contact:
+  email: hello@zippfeed.com
+  privacy: https://zippfeed.com/en-US/p/privacy
+  terms: https://zippfeed.com/en-US/p/terms
