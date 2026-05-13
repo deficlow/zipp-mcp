@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.zippfeed/zipp",
+  "title": "Zipp",
+  "description": "Multi-language crypto news with editorial sentiment + importance scoring; cites original publisher.",
+  "version": "1.0.0",
+  "websiteUrl": "https://zippfeed.com",
+  "repository": {
+    "url": "https://github.com/deficlow/zipp-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://zippfeed.com/mcp/"
+    }
+  ]
+}
