@@ -6,6 +6,7 @@
 
 [![MCP Endpoint](https://img.shields.io/badge/MCP-zippfeed.com%2Fmcp%2F-1f6feb)](https://zippfeed.com/mcp/)
 [![MCP Registry](https://img.shields.io/badge/MCP%20Registry-com.zippfeed%2Fzipp-success)](https://registry.modelcontextprotocol.io/v0/servers?search=zipp)
+[![Smithery](https://smithery.ai/badge/deficlow/zipp)](https://smithery.ai/servers/deficlow/zipp)
 [![Transport](https://img.shields.io/badge/transport-Streamable%20HTTP-2ea043)](https://modelcontextprotocol.io/)
 [![Auth](https://img.shields.io/badge/auth-public%20%E2%80%93%20no%20key-success)](https://zippfeed.com/mcp/)
 [![Languages](https://img.shields.io/badge/languages-8-blueviolet)](#languages)
