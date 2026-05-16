@@ -320,7 +320,8 @@ also public:
 - [`/llms.txt`](https://zippfeed.com/llms.txt) — AI-discoverable URL map
 - [`/sitemap.xml`](https://zippfeed.com/sitemap.xml), [`/news_sitemap.xml`](https://zippfeed.com/news_sitemap.xml), [`/image_sitemap.xml`](https://zippfeed.com/image_sitemap.xml)
 - [`/rss.xml`](https://zippfeed.com/rss.xml) + [`/feed.json`](https://zippfeed.com/feed.json) (per-language + per-category + per-slice variants)
-- [`/developer/openapi.json`](https://zippfeed.com/developer/openapi.json) — REST OpenAPI 3.1 spec
+
+The standalone developer REST API was retired on 2026-05-14 — `GET /developer/v1/*` now returns `410 Gone` with a pointer to the MCP endpoint. AI-agent integrations should use MCP; long-form content readers should use the RSS or JSON Feed surfaces above.
 
 ## Legal
 
