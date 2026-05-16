@@ -85,6 +85,5 @@ jobs:
             --no-progress
             --max-concurrency 4
             --accept 200,403,429
-            --exclude-mail
             README.md
           fail: true
