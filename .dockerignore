@@ -1,0 +1,9 @@
+.git
+.github
+.gitignore
+.dockerignore
+LICENSE
+README.md
+examples
+server.json
+smithery.yaml
