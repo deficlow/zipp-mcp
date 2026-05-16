@@ -38,6 +38,10 @@ headline list. Zipp adds an **editorial layer** on top of the firehose:
 
 ## Quick start
 
+Zipp speaks **Streamable HTTP** at `https://zippfeed.com/mcp/` — no
+auth, no install. Below are copy-paste configs for the major
+MCP-capable clients, plus two ways to smoke-test the endpoint.
+
 ### Claude Desktop
 
 Add to your `claude_desktop_config.json` (macOS:
@@ -58,10 +62,25 @@ Restart Claude Desktop. You should see Zipp in the tool list and be
 able to ask things like *"What's breaking in crypto right now?"* or
 *"Search Zipp for Bitcoin ETF inflows in Turkish."*
 
+### Claude Code (CLI)
+
+One-liner — registers Zipp at user scope so every project sees it:
+
+```bash
+claude mcp add --scope user --transport http zipp https://zippfeed.com/mcp/
+```
+
+Verify with `claude mcp list`.
+
 ### Claude.ai web (Connectors)
 
 Settings → Connectors → **Add custom connector** →
 URL: `https://zippfeed.com/mcp/` → no authentication.
+
+### ChatGPT (Custom Connectors)
+
+Settings → Connectors → **Add** → Custom connector →
+URL: `https://zippfeed.com/mcp/` → Authentication: **None**.
 
 ### Cursor
 
@@ -77,6 +96,110 @@ URL: `https://zippfeed.com/mcp/` → no authentication.
 }
 ```
 
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "zipp": {
+      "serverUrl": "https://zippfeed.com/mcp/"
+    }
+  }
+}
+```
+
+### Cline (VS Code extension)
+
+Open the Cline panel → **MCP Servers** → **Edit Configuration**, then
+add Zipp to `cline_mcp_settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "zipp": {
+      "url": "https://zippfeed.com/mcp/",
+      "type": "streamableHttp"
+    }
+  }
+}
+```
+
+### Zed
+
+`~/.config/zed/settings.json` — Zed's `context_servers` interface is
+stdio-only today, so use the [`mcp-remote`](https://www.npmjs.com/package/mcp-remote)
+bridge:
+
+```json
+{
+  "context_servers": {
+    "zipp": {
+      "command": {
+        "path": "npx",
+        "args": ["-y", "mcp-remote", "https://zippfeed.com/mcp/"]
+      }
+    }
+  }
+}
+```
+
+### Gemini CLI
+
+`~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "zipp": {
+      "httpUrl": "https://zippfeed.com/mcp/"
+    }
+  }
+}
+```
+
+### OpenAI Responses API
+
+```python
+from openai import OpenAI
+
+client = OpenAI()
+resp = client.responses.create(
+    model="gpt-5",
+    tools=[{
+        "type": "mcp",
+        "server_label": "zipp",
+        "server_url": "https://zippfeed.com/mcp/",
+        "require_approval": "never",
+    }],
+    input="What's breaking in crypto right now? Cite the original publisher.",
+)
+print(resp.output_text)
+```
+
+### Anthropic Messages API
+
+The MCP connector is a beta — pass the header below until it goes GA:
+
+```python
+import anthropic
+
+client = anthropic.Anthropic()
+msg = client.messages.create(
+    model="claude-opus-4-7",
+    max_tokens=1024,
+    mcp_servers=[{
+        "type": "url",
+        "url": "https://zippfeed.com/mcp/",
+        "name": "zipp",
+    }],
+    messages=[{"role": "user", "content": "What's breaking in crypto right now?"}],
+    extra_headers={"anthropic-beta": "mcp-client-2025-04-04"},
+)
+print(msg.content)
+```
+
 ### Smoke test
 
 Verify the server from your shell — no client needed:
@@ -90,6 +213,17 @@ curl -s -X POST "https://zippfeed.com/mcp/" \
 
 Expected: a JSON-RPC `initialize` result where `serverInfo.name = "Zipp"`
 and the server advertises `tools`, `resources`, and `prompts` capabilities.
+
+For an interactive UI, run the official MCP Inspector:
+
+```bash
+npx @modelcontextprotocol/inspector
+```
+
+In the browser tab that opens, pick **Streamable HTTP** as the
+transport, paste `https://zippfeed.com/mcp/`, click **Connect**, then
+browse the **Tools / Resources / Prompts** tabs to exercise the
+server end-to-end.
 
 ## Tools
 
