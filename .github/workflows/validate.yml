@@ -1,0 +1,89 @@
+name: validate
+
+on:
+  pull_request:
+    paths:
+      - 'server.json'
+      - 'smithery.yaml'
+      - 'README.md'
+      - 'examples/**'
+      - '.github/workflows/validate.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manifests:
+    name: server.json + smithery.yaml
+    runs-on: ubuntu-latest
+    env:
+      MCP_PUBLISHER_VERSION: v1.7.9
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mcp-publisher
+        run: |
+          set -euo pipefail
+          curl -fsSL \
+            "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" \
+            -o /tmp/mcp-publisher.tar.gz
+          tar -xzf /tmp/mcp-publisher.tar.gz -C /tmp/
+          sudo install -m 0755 /tmp/mcp-publisher /usr/local/bin/mcp-publisher
+          mcp-publisher --version
+
+      - name: Validate server.json against MCP Registry schema
+        run: mcp-publisher validate server.json
+
+      - name: Validate smithery.yaml canonical structure
+        run: |
+          python3 - <<'PY'
+          import sys, yaml
+
+          with open('smithery.yaml') as f:
+              data = yaml.safe_load(f)
+
+          if not isinstance(data, dict):
+              sys.exit("smithery.yaml: top level must be a YAML map")
+
+          name = data.get('name')
+          if not name or not isinstance(name, str):
+              sys.exit("smithery.yaml: 'name' is required and must be a string")
+
+          if data.get('target') != 'remote':
+              sys.exit("smithery.yaml: 'target' must be 'remote' for hosted servers")
+
+          start = data.get('startCommand')
+          if not isinstance(start, dict):
+              sys.exit("smithery.yaml: 'startCommand' must be a map")
+
+          if start.get('type') != 'streamableHttp':
+              sys.exit(
+                  "smithery.yaml: startCommand.type must be 'streamableHttp' "
+                  "(camelCase, no hyphens)"
+              )
+
+          url = start.get('url') or ''
+          if not url.startswith('https://'):
+              sys.exit("smithery.yaml: startCommand.url must be an https:// URL")
+
+          print(f"smithery.yaml OK  name={name}  url={url}")
+          PY
+
+  links:
+    name: README link check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lychee link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-concurrency 4
+            --accept 200,403,406,429
+            README.md
+          fail: true
