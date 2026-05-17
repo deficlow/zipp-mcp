@@ -3,7 +3,7 @@
   "name": "com.zippfeed/zipp",
   "title": "Zipp",
   "description": "Multi-language crypto news with editorial sentiment + importance scoring; cites original publisher.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "websiteUrl": "https://zippfeed.com",
   "repository": {
     "url": "https://github.com/deficlow/zipp-mcp",
@@ -23,7 +23,7 @@
     }
   ],
   "_meta": {
-    "com.zippfeed": {
+    "com.zippfeed/zipp": {
       "languages": [
         "en-US", "tr-TR", "es-ES", "ru-RU",
         "pt-PT", "fr-FR", "de-DE", "it-IT"
