@@ -1,0 +1,84 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zipp-mcp"
+version = "0.1.0"
+description = "Zipp MCP — multi-language crypto news for AI assistants. Sentiment + importance + source attribution across 8 languages."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Zipp", email = "hello@zippfeed.com" }]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "crypto",
+    "blockchain",
+    "news",
+    "sentiment",
+    "aggregator",
+    "multilingual",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Communications",
+    "Typing :: Typed",
+]
+dependencies = [
+    "mcp>=1.2.0",
+    "httpx>=0.27.0",
+    "pydantic-settings>=2.5.0",
+]
+
+[project.urls]
+Homepage = "https://zippfeed.com"
+Documentation = "https://github.com/deficlow/zipp-mcp#readme"
+Repository = "https://github.com/deficlow/zipp-mcp"
+Issues = "https://github.com/deficlow/zipp-mcp/issues"
+"MCP Registry" = "https://registry.modelcontextprotocol.io/v0/servers?search=zipp"
+
+[project.scripts]
+zipp-mcp = "zipp_mcp.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "respx>=0.22.0",
+    "ruff>=0.7.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zipp_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/zipp_mcp",
+    "tests",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
