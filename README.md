@@ -12,9 +12,12 @@
 [![Languages](https://img.shields.io/badge/languages-8-blueviolet)](#languages)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
-This repository contains the public documentation and listing manifest
-for **Zipp's MCP server**. The server itself is hosted at
-`https://zippfeed.com/mcp/` — there is nothing to install or self-host.
+This repository hosts the **public listing manifest** and the
+**`zipp-mcp` Python package**. The canonical Zipp MCP server is
+hosted at `https://zippfeed.com/mcp/` — most clients should connect
+to that URL directly. The PyPI / Docker package is for the cases
+where they can't: stdio-only desktop clients, locked-down networks,
+or anywhere you want a self-contained install.
 
 - 🌐 Website: [zippfeed.com](https://zippfeed.com)
 - 🔌 MCP endpoint: `https://zippfeed.com/mcp/`
@@ -22,6 +25,80 @@ for **Zipp's MCP server**. The server itself is hosted at
 - 🔓 Auth: none — public, rate-limited at the Cloudflare edge
 - 📰 Coverage: crypto / blockchain / Web3 across 8 languages
 - ✍️ Editorial: every item carries sentiment + importance + source attribution
+- 📦 PyPI: `uvx zipp-mcp` · Docker: `ghcr.io/deficlow/zipp-mcp` (Day 3 follow-up)
+
+## Self-host
+
+Three install paths. All three speak the same protocol and call the
+same upstream API; the right choice depends on the client.
+
+### `uvx` — no install, one command
+
+For stdio MCP clients (Claude Desktop, Cursor's stdio mode, Cline,
+Zed, etc.) that prefer launching a local subprocess:
+
+```bash
+uvx zipp-mcp
+```
+
+Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "zipp": {
+      "command": "uvx",
+      "args": ["zipp-mcp"]
+    }
+  }
+}
+```
+
+### `pip install` — for embedded use
+
+```bash
+pip install zipp-mcp
+zipp-mcp --transport stdio
+```
+
+Or import the client directly in your own code:
+
+```python
+from zipp_mcp import ZippClient
+
+async with ZippClient() as zipp:
+    payload = await zipp.search(query="bitcoin etf", lang="en-US", limit=5)
+    for item in payload["items"]:
+        print(item["title"], item["sentiment"], item["importance"])
+```
+
+### Docker — for hosted / sandboxed environments
+
+```bash
+docker run -i --rm ghcr.io/deficlow/zipp-mcp
+```
+
+For Streamable HTTP transport on a server (Railway, Fly, Render):
+
+```bash
+docker run -p 8080:8080 -e MCP_HOST=0.0.0.0 \
+  ghcr.io/deficlow/zipp-mcp \
+  zipp-mcp --transport http
+```
+
+### Configuration
+
+All flags read from env vars too; everything is optional.
+
+| Env var          | Default                | What it does |
+|------------------|------------------------|--------------|
+| `ZIPP_API_BASE`  | `https://zippfeed.com` | Upstream Zipp deployment (staging, mirror, etc.) |
+| `ZIPP_API_TIMEOUT_S` | `30`               | HTTP client timeout (1–120s) |
+| `MCP_HOST`       | `127.0.0.1`            | Bind host for HTTP/SSE transports (set `0.0.0.0` in containers) |
+| `MCP_PORT`       | `8080`                 | Bind port; also aliased as `PORT` for Railway/Fly/Render/Heroku |
+
+The package is read-only — there is nothing to authenticate; the
+upstream API is public and rate-limited at the Cloudflare edge.
 
 ## Why Zipp?
 
