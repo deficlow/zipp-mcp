@@ -1,0 +1,68 @@
+name: publish-pypi
+
+# Triggered on a semver tag (``vX.Y.Z`` or ``vX.Y.Z-pre``). Uploads the
+# wheel + sdist to PyPI via Trusted Publisher OIDC — no API token, no
+# secret rotation. The PyPI project must be configured with this repo
+# + workflow + ``pypi`` environment under https://pypi.org/manage/
+# account/publishing/ before the first run, otherwise the upload step
+# fails fast with a 403.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build wheel + sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Sanity-check pyproject version matches the tag
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(grep -E '^version\s*=\s*"' pyproject.toml | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME (=$tag) does not match pyproject version $pkg"
+            exit 1
+          fi
+          echo "Tag ↔ pyproject match: $pkg"
+
+      - name: Build
+        run: uv build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/zipp-mcp/
+    permissions:
+      # OIDC token used by PyPI Trusted Publisher — no PYPI_API_TOKEN
+      # secret required.
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        # Defaults are correct: oidc=true, packages-dir=dist/.
