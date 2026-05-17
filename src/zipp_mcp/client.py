@@ -68,7 +68,7 @@ class ZippClient:
             transport=transport,
         )
 
-    async def __aenter__(self) -> "ZippClient":
+    async def __aenter__(self) -> ZippClient:
         return self
 
     async def __aexit__(self, *exc: object) -> None:
